@@ -1,31 +1,23 @@
 package model;
 
-import java.util.Objects;
-
 public class SubTask extends Task {
-    private int idEpic;
+    public int idEpic;
 
-
-    public int getIdEpic() {
-        return idEpic;
-    }
-
-    public void setIdEpic(int idEpic) {
-        this.idEpic = idEpic;
+    public SubTask(String name, String description, int id, StatusTask status, int idEpic) {
+        super(name, description, id, status);
+        this.idEpic=idEpic;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SubTask subTask = (SubTask) o;
-        return idEpic == subTask.idEpic;
+    public String toString() {
+        return "SubTask{" +
+                "idEpic=" + idEpic +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idEpic);
-    }
 }
-
 
