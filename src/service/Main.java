@@ -1,4 +1,4 @@
-import service.Manager;
+package service;
 
 public class Main {
 
