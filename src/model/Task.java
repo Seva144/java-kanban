@@ -1,16 +1,18 @@
 package model;
 
-public abstract class Task {
+import static service.Manager.generateId;
+
+public class Task {
 
     protected String name;
     protected String description;
-    protected int id;
+    public int id;
     public StatusTask status;
 
-    public Task(String name, String description, int id, StatusTask status) {
+    public Task(String name, String description, StatusTask status) {
         this.name = name;
         this.description = description;
-        this.id = id;
+        id = generateId();
         this.status = status;
     }
 

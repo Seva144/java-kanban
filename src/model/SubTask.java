@@ -1,10 +1,14 @@
 package model;
 
-public class SubTask extends Task {
+import static service.Manager.generateId;
+
+public class SubTask extends Task{
+    public int id;
     public int idEpic;
 
-    public SubTask(String name, String description, int id, StatusTask status, int idEpic) {
-        super(name, description, id, status);
+    public SubTask(String name, String description, StatusTask status, int idEpic) {
+        super(name, description, status);
+        id = generateId();
         this.idEpic=idEpic;
     }
 
@@ -18,6 +22,6 @@ public class SubTask extends Task {
                 ", status=" + status +
                 '}';
     }
-
 }
+
 
