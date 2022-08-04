@@ -1,22 +1,31 @@
 package model;
 
-import static service.Manager.generateId;
+import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    public int id;
 
-    public EpicTask(String name, String description, StatusTask status) {
-        super(name, description, status);
-        id=generateId();
+    private final ArrayList<Integer> subTaskId = new ArrayList<>();
+
+    public EpicTask(String name, String description, int id, StatusTask status) {
+        super(name, description, id, status);
+    }
+
+    public ArrayList<Integer> getSubTaskId() {
+        return subTaskId;
+    }
+
+    public void setSubTaskId(int id){
+        subTaskId.add(id);
     }
 
     @Override
     public String toString() {
         return "EpicTask{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
+                "name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() + '\'' +
+                ", subTaskId=" + subTaskId +
                 '}';
     }
 }
