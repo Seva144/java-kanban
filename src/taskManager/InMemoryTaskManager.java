@@ -1,22 +1,18 @@
-package memoryTaskManager;
+package taskManager;
 
 import interfaces.TaskManager;
 import model.*;
 import java.util.*;
 
-import static memoryTaskManager.InMemoryHistoryManager.history;
+import static taskManager.InMemoryHistoryManager.history;
+import static taskManager.Managers.getDefaultHistory;
+
 
 public class InMemoryTaskManager implements TaskManager {
 
-    public static HashMap<Integer, Task> taskMap = new HashMap<>();
-    public static HashMap<Integer, EpicTask> epicMap = new HashMap<>();
-    public static HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+    int idGenerate;
 
-
-
-    static int idGenerate;
-
-    public static int generateId() {
+    public int generateId() {
         idGenerate++;
         return idGenerate;
     }
@@ -66,8 +62,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void getTask(int id) {
         taskMap.get(id);
-        history.add(taskMap.get(id));
-        checkHistory();
+        getDefaultHistory().add(taskMap.get(id));
     }
     @Override
     public void updateTask(Task task) {
@@ -94,9 +89,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void getEpicTask(int id) {
         epicMap.get(id);
-        history.add(epicMap.get(id));
-        checkHistory();
+        getDefaultHistory().add(epicMap.get(id));
     }
+
     @Override
     public void updateEpicTask(EpicTask task) {
         taskMap.put(task.getId(), task);
@@ -115,8 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void getSubTask(int id) {
         subTaskMap.get(id);
-        history.add(subTaskMap.get(id));
-        checkHistory();
+        getDefaultHistory().add(subTaskMap.get(id));
     }
     @Override
     public void updateSubTask(SubTask task) {
@@ -157,12 +151,6 @@ public class InMemoryTaskManager implements TaskManager {
                     checkEpic.getValue().setStatus(StatusTask.DONE);
                 }
             }
-        }
-    }
-
-    public void checkHistory(){
-        if (history.size()>10){
-            history.remove(0);
         }
     }
 }
