@@ -4,11 +4,14 @@ import interfaces.TaskManager;
 import model.*;
 import java.util.*;
 
-import static taskManager.InMemoryHistoryManager.history;
 import static taskManager.Managers.getDefaultHistory;
 
 
 public class InMemoryTaskManager implements TaskManager {
+
+    public HashMap<Integer, Task> taskMap = new HashMap<>();
+    public HashMap<Integer, EpicTask> epicMap = new HashMap<>();
+    public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
 
     int idGenerate;
 
@@ -16,7 +19,6 @@ public class InMemoryTaskManager implements TaskManager {
         idGenerate++;
         return idGenerate;
     }
-
 
     //Получение всех типов задач
     @Override

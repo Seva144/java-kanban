@@ -2,9 +2,13 @@ package taskManager;
 
 import interfaces.HistoryManager;
 import model.Task;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
+
+    public List<Task> history = new ArrayList<>();
 
     @Override
     public List<Task> getHistory() {

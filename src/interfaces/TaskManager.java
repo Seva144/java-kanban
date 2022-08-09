@@ -5,16 +5,10 @@ import model.SubTask;
 import model.Task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public interface TaskManager {
 
     int generateId();
-
-    HashMap<Integer, Task> taskMap = new HashMap<>();
-    HashMap<Integer, EpicTask> epicMap = new HashMap<>();
-    HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
 
     ArrayList<Task> getAllTasks();
     ArrayList<EpicTask> getAllEpicTasks();
