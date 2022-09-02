@@ -1,7 +1,6 @@
 package tests;
 
-import interfaces.HistoryManager;
-import taskManager.InMemoryHistoryManager;
+
 import taskManager.InMemoryTaskManager;
 
 import model.EpicTask;
@@ -13,6 +12,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 import static taskManager.Managers.getDefaultHistory;
 
@@ -201,17 +201,16 @@ public class ManagerTest {
         Task task2 = new Task("Сходить в магазин", "Купить продукты", taskManager.generateId(), StatusTask.NEW);
 
         EpicTask epicTask1 = new EpicTask("Ремонт", "Ремонт кухни", taskManager.generateId(), StatusTask.NEW);
-        EpicTask epicTask2 = new EpicTask("Отдых", "Запланировать отдых", taskManager.generateId(), StatusTask.NEW);
 
         SubTask subTask1 = new SubTask("Техника", "Купить бытовую технику", taskManager.generateId(), StatusTask.NEW);
         SubTask subTask2 = new SubTask("Мебель", "Собрать кухню", taskManager.generateId(), StatusTask.NEW);
-        SubTask subTask3 = new SubTask("Билеты", "Найти билеты", taskManager.generateId(), StatusTask.NEW);
+        SubTask subTask3 = new SubTask("Розетки", "Сделать розетки", taskManager.generateId(), StatusTask.NEW);
 
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
         taskManager.addEpicTask(epicTask1);
-        taskManager.addEpicTask(epicTask2);
+
 
         taskManager.addSubTask(subTask1);
         taskManager.addSubTask(subTask2);
@@ -219,13 +218,14 @@ public class ManagerTest {
 
         epicTask1.setSubTaskId(subTask1.getId());
         epicTask1.setSubTaskId(subTask2.getId());
-        epicTask2.setSubTaskId(subTask3.getId());
+        epicTask1.setSubTaskId(subTask3.getId());
+
+        //1 - вызов задач
 
         taskManager.getTask(task1.getId());
         taskManager.getTask(task2.getId());
 
         taskManager.getEpicTask(epicTask1.getId());
-        taskManager.getEpicTask(epicTask2.getId());
 
         taskManager.getSubTask(subTask1.getId());
         taskManager.getSubTask(subTask2.getId());
@@ -233,6 +233,29 @@ public class ManagerTest {
 
         System.out.println(getDefaultHistory().getHistory());
 
-//        Assert.assertEquals(7, getDefaultHistory().getHistory().size());
+        //2 - вызов задач
+
+        taskManager.getSubTask(subTask1.getId());
+        taskManager.getSubTask(subTask2.getId());
+        taskManager.getSubTask(subTask3.getId());
+
+        taskManager.getTask(task1.getId());
+        taskManager.getTask(task2.getId());
+
+        taskManager.getEpicTask(epicTask1.getId());
+
+        System.out.println(getDefaultHistory().getHistory());
+
+        //3 - удаление одного таска
+
+        taskManager.removeTask(task1.getId());
+
+        System.out.println(getDefaultHistory().getHistory());
+
+        //3 - удаление эпика
+
+        taskManager.removeEpicTask(epicTask1.getId());
+
+        System.out.println(getDefaultHistory().getHistory());
     }
 }
