@@ -1,11 +1,12 @@
 package model;
 
 public class Node {
-        public Task task;
-        public Node next;
-        public Node prev;
 
-        public Node(Task task) {
-                this.task = task;
-        }
+    public Task task;
+    public Node prev;
+    public Node next;
+
+    public Node(Task task) {
+        this.task = task;
+    }
 }

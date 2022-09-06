@@ -12,8 +12,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
 import static taskManager.Managers.getDefaultHistory;
 
 public class ManagerTest {
@@ -233,7 +231,7 @@ public class ManagerTest {
 
         System.out.println(getDefaultHistory().getHistory());
 
-        //2 - вызов задач
+//        2 - вызов задач
 
         taskManager.getSubTask(subTask1.getId());
         taskManager.getSubTask(subTask2.getId());

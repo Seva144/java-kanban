@@ -10,55 +10,70 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    static class CustomLinkedList{
-
-        private static final List<Node> linkedList = new ArrayList<>();
-        private static final HashMap<Integer, Node> searchNode = new HashMap<>();
+    private static class CustomLinkedList {
 
         private static Node head;
-
+        private static Node tail;
 
         public static void linkList(Node node) {
             if (head == null) {
                 head = node;
             } else {
-                head.next=node;
+                tail.next = node;
             }
-            node.prev = head;
-            getTask(node);
+            node.prev = tail;
+            tail = node;
         }
 
-        public static void getTask(Node node) {
-            linkedList.add(node);
+        public static ArrayList<Node> getTask() {
+            Node currentNode = head;
+            ArrayList<Node> linkedList = new ArrayList<>();
+            while (currentNode != null) {
+                linkedList.add(currentNode);
+                currentNode = currentNode.next;
+            }
+            return linkedList;
         }
-
+        
         public static void removeNode(Node node1) {
             if (searchNode.containsKey(node1.task.getId())) {
-                Node node = searchNode.get(node1.task.getId());
-                if (node.prev != null && node.next != null) {
+                Node node = searchNode.remove(node1.task.getId());
+                if (node.prev != null) {
+                    //Удаляемый элемент - не первый
                     node.prev.next = node.next;
-                    node.next.prev = node.prev;
-                } else if (node.prev != null) {
-                    head = null;
+                    if (node.next == null) {
+                        //Удаляемый элемент последний
+                        tail = node.prev;
+                    } else {
+                        node.next.prev = node.prev;
+                    }
+                } else {
+                    //Удаляемый элемент - первый
+                    head = node.next;
+                    if (head == null) {
+                        //В списке был один элемент
+                        tail = null;
+                    } else {
+                        head.prev = null;
+                    }
                 }
-                node.prev = null;
-                node.next = null;
-                linkedList.remove(node);
             }
         }
     }
+
+    private static final HashMap<Integer, Node> searchNode = new HashMap<>();
 
     List<Task> history = new ArrayList<>();
 
     @Override
     public void remove(int id) {
-        CustomLinkedList.removeNode(CustomLinkedList.searchNode.get(id));
-        CustomLinkedList.searchNode.remove(id);
+        CustomLinkedList.removeNode(searchNode.get(id));
+        searchNode.remove(id);
     }
 
     @Override
     public List<Task> getHistory() {
-        for (Node linkList : CustomLinkedList.linkedList) {
+        for (Node linkList : CustomLinkedList.getTask()) {
             history.add(linkList.task);
         }
         return history;
@@ -69,9 +84,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node node = new Node(task);
         CustomLinkedList.removeNode(node);
         CustomLinkedList.linkList(node);
-        CustomLinkedList.searchNode.put(task.getId(), node);
+        searchNode.put(task.getId(), node);
     }
 }
+
 
 
 
