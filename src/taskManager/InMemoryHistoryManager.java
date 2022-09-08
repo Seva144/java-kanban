@@ -10,80 +10,82 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private static class CustomLinkedList {
+    public static class CustomLinkedList {
 
-        private static Node head;
-        private static Node tail;
+        private static Node<Task> head;
+        private static Node<Task> tail;
 
-        public static void linkList(Node node) {
+        public void linkList(Node<Task> node) {
             if (head == null) {
                 head = node;
             } else {
-                tail.next = node;
+                tail.setNext(node);
             }
-            node.prev = tail;
+            node.setPrev(tail);
             tail = node;
         }
 
-        public static ArrayList<Node> getTask() {
-            Node currentNode = head;
-            ArrayList<Node> linkedList = new ArrayList<>();
-            while (currentNode != null) {
-                linkedList.add(currentNode);
-                currentNode = currentNode.next;
-            }
-            return linkedList;
+        public Node<Task> head() {
+            return head;
         }
-        
-        public static void removeNode(Node node1) {
-            if (searchNode.containsKey(node1.task.getId())) {
-                Node node = searchNode.remove(node1.task.getId());
-                if (node.prev != null) {
-                    //Удаляемый элемент - не первый
-                    node.prev.next = node.next;
-                    if (node.next == null) {
-                        //Удаляемый элемент последний
-                        tail = node.prev;
-                    } else {
-                        node.next.prev = node.prev;
-                    }
+
+        public void removeNode(Node<Task> node) {
+            if (node.getPrev()!= null) {
+                //Удаляемый элемент - не первый
+                node.getPrev().setNext(node.getNext());
+                if (node.getNext() == null) {
+                    //Удаляемый элемент последний
+                    tail = node.getPrev();
                 } else {
-                    //Удаляемый элемент - первый
-                    head = node.next;
-                    if (head == null) {
-                        //В списке был один элемент
-                        tail = null;
-                    } else {
-                        head.prev = null;
-                    }
+                    node.getNext().setPrev(node.getPrev());
+                }
+            } else {
+                //Удаляемый элемент - первый
+                head = node.getNext();
+                if (head == null) {
+                    //В списке был один элемент
+                    tail = null;
+                } else {
+                    head.setPrev(null);
                 }
             }
         }
     }
 
-    private static final HashMap<Integer, Node> searchNode = new HashMap<>();
+    private static final HashMap<Integer, Node<Task>> searchNode = new HashMap<>();
 
     List<Task> history = new ArrayList<>();
 
+    CustomLinkedList linkedList = new CustomLinkedList();
+
     @Override
     public void remove(int id) {
-        CustomLinkedList.removeNode(searchNode.get(id));
+        linkedList.removeNode(searchNode.get(id));
         searchNode.remove(id);
     }
 
     @Override
     public List<Task> getHistory() {
-        for (Node linkList : CustomLinkedList.getTask()) {
-            history.add(linkList.task);
+        Node<Task> currentNode = linkedList.head();
+        ArrayList<Node<Task>> customList = new ArrayList<>();
+        while (currentNode != null) {
+            customList.add(currentNode);
+            currentNode = currentNode.getNext();
+        }
+        for (Node<Task> node : customList) {
+            history.add(node.task);
         }
         return history;
     }
 
     @Override
     public void add(Task task) {
-        Node node = new Node(task);
-        CustomLinkedList.removeNode(node);
-        CustomLinkedList.linkList(node);
+        Node<Task> node = new Node<>(task);
+        if (searchNode.containsKey(node.task.getId())) {
+            Node<Task> delNode = searchNode.get(node.task.getId());
+            linkedList.removeNode(delNode);
+        }
+        linkedList.linkList(node);
         searchNode.put(task.getId(), node);
     }
 }
