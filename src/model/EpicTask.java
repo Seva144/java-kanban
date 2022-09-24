@@ -20,7 +20,7 @@ public class EpicTask extends Task {
 
     @Override
     public String toString() {
-        return "EpicTask{" +
+        return "EPICTASK{" +
                 "name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +

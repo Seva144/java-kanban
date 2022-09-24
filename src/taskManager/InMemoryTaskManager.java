@@ -9,11 +9,11 @@ import static taskManager.Managers.getDefaultHistory;
 
 public class InMemoryTaskManager implements TaskManager {
 
+    int idGenerate;
+
     public HashMap<Integer, Task> taskMap = new HashMap<>();
     public HashMap<Integer, EpicTask> epicMap = new HashMap<>();
     public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
-
-    int idGenerate;
 
     public int generateId() {
         idGenerate++;
@@ -54,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Операции для задач Task
     @Override
-    public void addTask(Task task) {
+    public void addTask(Task task)  {
         taskMap.put(task.getId(), task);
     }
     @Override
@@ -74,7 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Операции для задач EpicTask
     @Override
-    public void addEpicTask(EpicTask task) {
+    public void addEpicTask(EpicTask task)  {
         epicMap.put(task.getId(), task);
     }
     @Override
@@ -104,7 +104,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Операции для задач SubTask
     @Override
-    public void addSubTask(SubTask task) {
+    public void addSubTask(SubTask task)  {
         subTaskMap.put(task.getId(), task);
     }
     @Override

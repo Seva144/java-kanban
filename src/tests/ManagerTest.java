@@ -1,6 +1,7 @@
 package tests;
 
 
+import taskManager.FiledBackedTasksManager;
 import taskManager.InMemoryTaskManager;
 
 import model.EpicTask;
@@ -10,6 +11,8 @@ import model.Task;
 import org.junit.Assert;
 import org.junit.Test;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static taskManager.Managers.getDefaultHistory;
@@ -218,7 +221,7 @@ public class ManagerTest {
         epicTask1.setSubTaskId(subTask2.getId());
         epicTask1.setSubTaskId(subTask3.getId());
 
-        //1 - вызов задач
+
 
         taskManager.getTask(task1.getId());
         taskManager.getTask(task2.getId());
@@ -231,7 +234,6 @@ public class ManagerTest {
 
         System.out.println(getDefaultHistory().getHistory());
 
-//        2 - вызов задач
 
         taskManager.getSubTask(subTask1.getId());
         taskManager.getSubTask(subTask2.getId());
@@ -244,16 +246,71 @@ public class ManagerTest {
 
         System.out.println(getDefaultHistory().getHistory());
 
-        //3 - удаление одного таска
+
 
         taskManager.removeTask(task1.getId());
 
         System.out.println(getDefaultHistory().getHistory());
 
-        //3 - удаление эпика
+
 
         taskManager.removeEpicTask(epicTask1.getId());
 
         System.out.println(getDefaultHistory().getHistory());
     }
+
+
+    @Test
+    public void CheckSave() throws IOException {
+        FiledBackedTasksManager taskManagerSave = new FiledBackedTasksManager();
+
+        Task task1 = new Task("Посмотреть фильм", "Посмотреть Star Wars", taskManagerSave.generateId(), StatusTask.NEW);
+        Task task2 = new Task("Сходить в магазин", "Купить продукты", taskManagerSave.generateId(), StatusTask.NEW);
+
+        SubTask subTask1 = new SubTask("Техника", "Купить бытовую технику", taskManagerSave.generateId(), StatusTask.NEW);
+        SubTask subTask2 = new SubTask("Мебель", "Собрать кухню", taskManagerSave.generateId(), StatusTask.NEW);
+
+        EpicTask epicTask1 = new EpicTask("Ремонт", "Ремонт кухни", taskManagerSave.generateId(), StatusTask.NEW);
+
+        epicTask1.setSubTaskId(subTask1.getId());
+        epicTask1.setSubTaskId(subTask2.getId());
+
+        taskManagerSave.addTask(task1);
+        taskManagerSave.addTask(task2);
+
+        taskManagerSave.addSubTask(subTask1);
+        taskManagerSave.addSubTask(subTask2);
+
+        taskManagerSave.addEpicTask(epicTask1);
+
+//        добавление просмотров задач
+
+        taskManagerSave.getTask(task1.getId());
+
+        taskManagerSave.getEpicTask(epicTask1.getId());
+
+        taskManagerSave.getSubTask(subTask1.getId());
+        taskManagerSave.getSubTask(subTask2.getId());
+
+        taskManagerSave.print();
+    }
+    @Test
+    public void CheckLoad(){
+        FiledBackedTasksManager taskManager = new FiledBackedTasksManager();
+        try {
+            taskManager.loadFromFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(taskManager.taskMap);
+        System.out.println(taskManager.subTaskMap);
+        System.out.println(taskManager.epicMap);
+
+        System.out.println(getDefaultHistory().getHistory());
+    }
+
+
+
+
 }

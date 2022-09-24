@@ -1,0 +1,8 @@
+id,type,name,status,description,SubTask
+1,TASK,Посмотреть фильм,NEW,Посмотреть Star Wars
+2,TASK,Сходить в магазин,NEW,Купить продукты
+3,SUBTASK,Техника,NEW,Купить бытовую технику
+4,SUBTASK,Мебель,NEW,Собрать кухню
+5,EPICTASK,Ремонт,NEW,Ремонт кухни,3,4
+ 
+1,5,3,4
