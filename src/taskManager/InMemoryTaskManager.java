@@ -2,6 +2,7 @@ package taskManager;
 
 import interfaces.TaskManager;
 import model.*;
+
 import java.util.*;
 
 import static taskManager.Managers.getDefaultHistory;
@@ -9,26 +10,24 @@ import static taskManager.Managers.getDefaultHistory;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    int idGenerate;
+    private int idGenerate = 1;
 
     public HashMap<Integer, Task> taskMap = new HashMap<>();
     public HashMap<Integer, EpicTask> epicMap = new HashMap<>();
     public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
 
-    public int generateId() {
-        idGenerate++;
-        return idGenerate;
-    }
 
     //Получение всех типов задач
     @Override
     public ArrayList<Task> getAllTasks() {
         return new ArrayList<>(taskMap.values());
     }
+
     @Override
     public ArrayList<EpicTask> getAllEpicTasks() {
         return new ArrayList<>(epicMap.values());
     }
+
     @Override
     public ArrayList<SubTask> getAllSubTasks() {
         return new ArrayList<>(subTaskMap.values());
@@ -39,58 +38,83 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeAllTasks() {
         taskMap.clear();
     }
+
     @Override
     public void removeAllEpicTasks() {
         epicMap.clear();
         subTaskMap.clear();
     }
+
     @Override
     public void removeAllSubTasks() {
         subTaskMap.clear();
-        for (Map.Entry<Integer, EpicTask> change : epicMap.entrySet()){
+        for (Map.Entry<Integer, EpicTask> change : epicMap.entrySet()) {
             change.getValue().setStatus(StatusTask.NEW);
         }
     }
 
     //Операции для задач Task
     @Override
-    public void addTask(Task task)  {
+    public void addTask(Task task) {
+        if (task.getId() < idGenerate) {
+            task.setId(idGenerate);
+            idGenerate++;
+        }
         taskMap.put(task.getId(), task);
     }
+
     @Override
     public void removeTask(int id) {
+        if(getDefaultHistory().getHistory().contains(taskMap.get(id))){
+            getDefaultHistory().remove(id);
+        }
         taskMap.remove(id);
-        getDefaultHistory().remove(id);
     }
+
     @Override
     public void getTask(int id) {
         taskMap.get(id);
         getDefaultHistory().add(taskMap.get(id));
     }
+
     @Override
-    public void updateTask(Task task) {
-        taskMap.put(task.getId(), task);
+    public void updateTask(int id, Task task) {
+        if(taskMap.containsKey(id)){
+            taskMap.replace(id,task);
+        }
     }
 
     //Операции для задач EpicTask
     @Override
-    public void addEpicTask(EpicTask task)  {
+    public void addEpicTask(EpicTask task) {
+        if (task.getId() < idGenerate) {
+            task.setId(idGenerate);
+            idGenerate++;
+        }
         epicMap.put(task.getId(), task);
     }
+
     @Override
     public void removeEpicTask(int id) {
+        if(getDefaultHistory().getHistory().contains(epicMap.get(id))){
+            getDefaultHistory().remove(id);
+        }
         for (Map.Entry<Integer, EpicTask> del : epicMap.entrySet()) {
             if (del.getKey() == id) {
                 ArrayList<Integer> idSubDel = del.getValue().getSubTaskId();
+                for(Integer idSubHistory: idSubDel){
+                    if(getDefaultHistory().getHistory().contains(subTaskMap.get(idSubHistory))){
+                        getDefaultHistory().remove(idSubHistory);
+                    }
+                }
                 for (Integer idDel : idSubDel) {
                     subTaskMap.remove(idDel);
-                    getDefaultHistory().remove(idDel);
                 }
             }
         }
         epicMap.remove(id);
-        getDefaultHistory().remove(id);
     }
+
     @Override
     public void getEpicTask(int id) {
         epicMap.get(id);
@@ -98,29 +122,44 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpicTask(EpicTask task) {
-        taskMap.put(task.getId(), task);
+    public void updateEpicTask(int id, EpicTask task) {
+        if(epicMap.containsKey(id)){
+            taskMap.replace(id, task);
+        }
+
     }
 
     //Операции для задач SubTask
     @Override
-    public void addSubTask(SubTask task)  {
+    public void addSubTask(SubTask task) {
+        if (task.getId() < idGenerate) {
+            task.setId(idGenerate);
+            idGenerate++;
+        }
         subTaskMap.put(task.getId(), task);
     }
+
     @Override
     public void removeSubTask(int id) {
+        if(getDefaultHistory().getHistory().contains(subTaskMap.get(id))){
+            getDefaultHistory().remove(id);
+        }
         subTaskMap.remove(id);
-        getDefaultHistory().remove(id);
         checkUpdate();
     }
+
     @Override
     public void getSubTask(int id) {
         subTaskMap.get(id);
         getDefaultHistory().add(subTaskMap.get(id));
     }
+
     @Override
-    public void updateSubTask(SubTask task) {
-        subTaskMap.put(task.getId(), task);
+    public void updateSubTask(int id, SubTask task) {
+        if(subTaskMap.containsKey(id)){
+            subTaskMap.replace(id, task);
+        }
+
         checkUpdate();
     }
 

@@ -6,7 +6,7 @@ import model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CSV_Reader {
+public class CSVFormatter {
 
     //заголовок
 
@@ -35,15 +35,15 @@ public class CSV_Reader {
 
             switch (taskType) {
                 case TASK:
-                    Task task = new Task(name, description, id, status);
+                    Task task = new Task(name, description, status);
                     putTask = (T) task;
                     break;
                 case SUBTASK:
-                    SubTask subTask = new SubTask(name, description, id, status);
+                    SubTask subTask = new SubTask(name, description, status);
                     putTask = (T) subTask;
                     break;
                 case EPICTASK:
-                    EpicTask epic = new EpicTask(name, description, id, status);
+                    EpicTask epic = new EpicTask(name, description, status);
                     for (int i = 5; i < str.length; i++) {
                         int idSub = Integer.parseInt(str[i]);
                         epic.setSubTaskId(idSub);

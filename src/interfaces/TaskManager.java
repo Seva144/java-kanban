@@ -9,8 +9,6 @@ import java.util.ArrayList;
 
 public interface TaskManager {
 
-    int generateId();
-
     ArrayList<Task> getAllTasks();
     ArrayList<EpicTask> getAllEpicTasks();
     ArrayList<SubTask> getAllSubTasks();
@@ -22,16 +20,16 @@ public interface TaskManager {
     void addTask(Task task) throws FileNotFoundException;
     void removeTask(int id);
     void getTask(int id);
-    void updateTask(Task task);
+    void updateTask(int id, Task task);
 
     void addEpicTask(EpicTask task) throws FileNotFoundException;
     void removeEpicTask(int id);
     void getEpicTask(int id);
-    void updateEpicTask(EpicTask task);
+    void updateEpicTask(int id, EpicTask task);
 
     void addSubTask(SubTask task) throws FileNotFoundException;
     void removeSubTask(int id);
     void getSubTask(int id);
-    void updateSubTask(SubTask task);
-
+    void updateSubTask(int id, SubTask task);
 }
+

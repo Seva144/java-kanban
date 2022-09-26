@@ -8,13 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static taskManager.CSV_Reader.*;
+import static taskManager.CSVFormatter.*;
 import static taskManager.Managers.getDefaultHistory;
-
 
 public class FiledBackedTasksManager extends InMemoryTaskManager {
 
-    static File file;
+    private final File file;
 
     public FiledBackedTasksManager() {
         file = new File("src/resources/", "FiledBacked.csv");
@@ -60,7 +59,6 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
                     break;
             }
         }
-
         List<Integer> history = historyFromString(data.get(data.size() - 1));
         for(Integer id: history){
             if(taskMap.containsKey(id)){
@@ -117,6 +115,36 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addSubTask(SubTask task) {
         super.addSubTask(task);
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void removeTask(int id) {
+        super.removeTask(id);
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void removeSubTask(int id) {
+        super.removeSubTask(id);
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void removeEpicTask(int id) {
+        super.removeEpicTask(id);
         try {
             save();
         } catch (FileNotFoundException e) {

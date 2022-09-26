@@ -2,8 +2,10 @@ package model;
 
 public class SubTask extends Task{
 
-    public SubTask(String name, String description, int id, StatusTask status) {
-        super(name, description, id, status);
+    private int id;
+
+    public SubTask(String name, String description, StatusTask status) {
+        super(name, description, status);
     }
 
     @Override
@@ -15,6 +17,10 @@ public class SubTask extends Task{
                 ", status=" + getStatus() +
                 '}';
     }
+
 }
+
+
+
 
 

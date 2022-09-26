@@ -4,13 +4,12 @@ public class Task {
 
     private final String name;
     private final String description;
-    private final int id;
+    private int id;
     private StatusTask status;
 
-    public Task(String name, String description, int id, StatusTask status) {
+    public Task(String name, String description, StatusTask status) {
         this.name = name;
         this.description = description;
-        this.id=id;
         this.status = status;
     }
 
@@ -32,6 +31,10 @@ public class Task {
 
     public void setStatus(StatusTask status) {
         this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
