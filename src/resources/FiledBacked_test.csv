@@ -1,0 +1,4 @@
+id,type,name,status,description,Duration,Year,Month,Day,Hours,Minutes,SubTask(Epics)
+1,EPICTASK,Уборка,NEW,Убрать квартиру,0,0,1,1,0,0,
+ 
+1

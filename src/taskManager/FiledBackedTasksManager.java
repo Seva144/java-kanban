@@ -3,20 +3,17 @@ package taskManager;
 import model.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static taskManager.CSVFormatter.*;
 import static taskManager.Managers.getDefaultHistory;
 
 public class FiledBackedTasksManager extends InMemoryTaskManager {
 
-    private final File file;
+    private static File file;
 
-    public FiledBackedTasksManager() {
-        file = new File("src/resources/", "FiledBacked.csv");
+    public FiledBackedTasksManager(File file) {
+        FiledBackedTasksManager.file = file;
     }
 
     public void print() throws IOException {
@@ -44,43 +41,48 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
         }
         br.close();
 
-        for (int i = 1; i < data.size() - 2; i++) {
-            String[] line = data.get(i).split(",");
-            TaskType taskType = TaskType.valueOf(line[1]);
-            switch (taskType) {
-                case TASK:
-                    addTask(fromString(data.get(i)));
-                    break;
-                case SUBTASK:
-                    addSubTask(fromString(data.get(i)));
-                    break;
-                case EPICTASK:
-                    addEpicTask(fromString(data.get(i)));
-                    break;
+        if(!Objects.equals(data.get(1), "")) {
+            for (int i = 1; i < data.size() - 2; i++) {
+                String[] line = data.get(i).split(",");
+                TaskType taskType = TaskType.valueOf(line[1]);
+                switch (taskType) {
+                    case TASK:
+                        addTask(fromString(data.get(i)));
+                        break;
+                    case SUBTASK:
+                        addSubTask(fromString(data.get(i)));
+                        break;
+                    case EPICTASK:
+                        addEpicTask(fromString(data.get(i)));
+                        break;
+                }
             }
         }
-        List<Integer> history = historyFromString(data.get(data.size() - 1));
-        for(Integer id: history){
-            if(taskMap.containsKey(id)){
-                getDefaultHistory().add(taskMap.get(id));
-            } else if(subTaskMap.containsKey(id)){
-                getDefaultHistory().add(subTaskMap.get(id));
-            } else if(epicMap.containsKey(id)){
-                getDefaultHistory().add(epicMap.get(id));
+        if(!Objects.equals(data.get(data.size() - 1), "")) {
+            List<Integer> history = historyFromString(data.get(data.size() - 1));
+            for (Integer id : history) {
+                if (getAllTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(getAllTasksMap().get(id));
+                } else if (getAllSubTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(getAllSubTasksMap().get(id));
+                } else if (getAllEpicTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(getAllEpicTasksMap().get(id));
+                }
             }
         }
     }
 
+
     public void save() throws FileNotFoundException {
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println(getHeader());
-            for (Map.Entry<Integer, Task> task : taskMap.entrySet()) {
+            for (Map.Entry<Integer, Task> task : getAllTasksMap().entrySet()) {
                 printWriter.println(intoString(task.getValue()));
             }
-            for (Map.Entry<Integer, SubTask> task : subTaskMap.entrySet()) {
+            for (Map.Entry<Integer, SubTask> task : getAllSubTasksMap().entrySet()) {
                 printWriter.println(intoString(task.getValue()));
             }
-            for (Map.Entry<Integer, EpicTask> task : epicMap.entrySet()) {
+            for (Map.Entry<Integer, EpicTask> task : getAllEpicTasksMap().entrySet()) {
                 String getSubId = String.valueOf(task.getValue().getSubTaskId()).replaceAll("\\s", "");
                 printWriter.println(intoString(task.getValue()) + "," + getSubId.substring
                         (getSubId.indexOf("[") + 1, getSubId.lastIndexOf("]")));
@@ -91,6 +93,7 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void addTask(Task task) {
@@ -153,8 +156,38 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void getTask(int id) {
-        super.getTask(id);
+    public Task getTask(int id) {
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return super.getTask(id);
+    }
+
+    @Override
+    public SubTask getSubTask(int id) {
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return super.getSubTask(id);
+    }
+
+    @Override
+    public EpicTask getEpicTask(int id) {
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return super.getEpicTask(id);
+    }
+
+    @Override
+    public void removeAllTasks() {
+        super.removeAllTasks();
         try {
             save();
         } catch (FileNotFoundException e) {
@@ -163,8 +196,8 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void getSubTask(int id) {
-        super.getSubTask(id);
+    public void removeAllSubTasks() {
+        super.removeAllSubTasks();
         try {
             save();
         } catch (FileNotFoundException e) {
@@ -173,8 +206,38 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void getEpicTask(int id) {
-        super.getEpicTask(id);
+    public void removeAllEpicTasks() {
+        super.removeAllEpicTasks();
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateTask(int id, Task task) {
+        super.updateTask(id, task);
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateSubTask(int id, SubTask task) {
+        super.updateSubTask(id, task);
+        try {
+            save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setSubTaskForEpic(EpicTask task, int id) {
+        super.setSubTaskForEpic(task, id);
         try {
             save();
         } catch (FileNotFoundException e) {

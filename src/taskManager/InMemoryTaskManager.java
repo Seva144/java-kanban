@@ -1,8 +1,13 @@
 package taskManager;
 
+import Exceptions.TaskException;
 import interfaces.TaskManager;
-import model.*;
+import model.EpicTask;
+import model.StatusTask;
+import model.SubTask;
+import model.Task;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static taskManager.Managers.getDefaultHistory;
@@ -12,10 +17,43 @@ public class InMemoryTaskManager implements TaskManager {
 
     private int idGenerate = 1;
 
-    public HashMap<Integer, Task> taskMap = new HashMap<>();
-    public HashMap<Integer, EpicTask> epicMap = new HashMap<>();
-    public HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
+    protected static HashMap<Integer, Task> taskMap = new HashMap<>();
+    protected static HashMap<Integer, EpicTask> epicMap = new HashMap<>();
+    protected static HashMap<Integer, SubTask> subTaskMap = new HashMap<>();
 
+    //Создание и получение списка в порядке приоритета
+
+    private static final Map<LocalDateTime, Task> prioritizedTask = new TreeMap<>();
+
+    public Map<LocalDateTime, Task> getPrioritizedTasks() {
+        return prioritizedTask;
+    }
+
+    public void addToPrioritizedMap(Task task) {
+        prioritizedTask.put(task.getStartTime(), task);
+        try {
+            checkIntersections();
+        } catch (TaskException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    Comparator<Task> comparator = new Comparator<Task>() {
+        @Override
+        public int compare(Task task1, Task task2) {
+            return task1.getStartTime().compareTo(task2.getStartTime());
+        }
+    };
+
+    public void checkIntersections() throws TaskException {
+        List<Task> taskList = new ArrayList<>(prioritizedTask.values());
+        taskList.sort(comparator);
+        for (int i = 0; i < taskList.size() - 2 + 1; i++) {
+            if ((taskList.get(i).getEndTime().isAfter(taskList.get(i + 1).getStartTime()))) {
+                throw new TaskException("Пересечение по времени");
+            }
+        }
+    }
 
     //Получение всех типов задач
     @Override
@@ -33,149 +71,193 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(subTaskMap.values());
     }
 
+    //получение всех типов задач в коллекции Hashmap
+
+    @Override
+    public HashMap<Integer, Task> getAllTasksMap() {
+        return taskMap;
+    }
+
+    @Override
+    public HashMap<Integer, SubTask> getAllSubTasksMap() {
+        return subTaskMap;
+    }
+
+    @Override
+    public HashMap<Integer, EpicTask> getAllEpicTasksMap() {
+        return epicMap;
+    }
+
     //Удаление всех типов задач
     @Override
     public void removeAllTasks() {
+        for (Map.Entry<Integer, Task> delTask : taskMap.entrySet()) {
+            prioritizedTask.remove(delTask.getValue().getStartTime());
+        }
         taskMap.clear();
     }
 
     @Override
     public void removeAllEpicTasks() {
         epicMap.clear();
+        for (Map.Entry<Integer, SubTask> delTask : subTaskMap.entrySet()) {
+            prioritizedTask.remove(delTask.getValue().getStartTime());
+        }
         subTaskMap.clear();
     }
 
     @Override
     public void removeAllSubTasks() {
+        for (Map.Entry<Integer, SubTask> delTask : subTaskMap.entrySet()) {
+            prioritizedTask.remove(delTask.getValue().getStartTime());
+        }
         subTaskMap.clear();
         for (Map.Entry<Integer, EpicTask> change : epicMap.entrySet()) {
             change.getValue().setStatus(StatusTask.NEW);
+            change.getValue().removeAllSubTaskId();
         }
     }
 
     //Операции для задач Task
     @Override
     public void addTask(Task task) {
-        if (task.getId() < idGenerate) {
-            task.setId(idGenerate);
-            idGenerate++;
+        if (task.getId() == 0) {
+            if (task.getId() < idGenerate) {
+                task.setId(idGenerate);
+                idGenerate++;
+            }
         }
         taskMap.put(task.getId(), task);
+        addToPrioritizedMap(task);
     }
 
     @Override
     public void removeTask(int id) {
-        if(getDefaultHistory().getHistory().contains(taskMap.get(id))){
+        if (getDefaultHistory().getHistory().contains(taskMap.get(id))) {
             getDefaultHistory().remove(id);
         }
+        prioritizedTask.remove(taskMap.get(id).getStartTime());
         taskMap.remove(id);
     }
 
     @Override
-    public void getTask(int id) {
-        taskMap.get(id);
+    public Task getTask(int id) {
         getDefaultHistory().add(taskMap.get(id));
+        return taskMap.get(id);
     }
 
     @Override
     public void updateTask(int id, Task task) {
-        if(taskMap.containsKey(id)){
-            taskMap.replace(id,task);
+        task.setId(id);
+        if (taskMap.containsKey(id)) {
+            taskMap.replace(id, task);
         }
+        prioritizedTask.remove(taskMap.get(id).getStartTime());
+        addToPrioritizedMap(task);
     }
 
     //Операции для задач EpicTask
     @Override
     public void addEpicTask(EpicTask task) {
-        if (task.getId() < idGenerate) {
-            task.setId(idGenerate);
-            idGenerate++;
+        task.setStatus(StatusTask.NEW);
+        if (task.getId() == 0) {
+            if (task.getId() < idGenerate) {
+                task.setId(idGenerate);
+                idGenerate++;
+            }
         }
         epicMap.put(task.getId(), task);
     }
 
     @Override
     public void removeEpicTask(int id) {
-        if(getDefaultHistory().getHistory().contains(epicMap.get(id))){
-            getDefaultHistory().remove(id);
+        for (Integer subId : epicMap.get(id).getSubTaskId()) {
+            prioritizedTask.remove(subTaskMap.get(subId).getStartTime());
         }
-        for (Map.Entry<Integer, EpicTask> del : epicMap.entrySet()) {
-            if (del.getKey() == id) {
-                ArrayList<Integer> idSubDel = del.getValue().getSubTaskId();
-                for(Integer idSubHistory: idSubDel){
-                    if(getDefaultHistory().getHistory().contains(subTaskMap.get(idSubHistory))){
-                        getDefaultHistory().remove(idSubHistory);
-                    }
-                }
-                for (Integer idDel : idSubDel) {
-                    subTaskMap.remove(idDel);
+
+        if (getDefaultHistory().getHistory().contains(epicMap.get(id))) {
+            for (Integer subId : epicMap.get(id).getSubTaskId()) {
+                if (getDefaultHistory().getHistory().contains(subTaskMap.get(subId))) {
+                    getDefaultHistory().remove(subId);
                 }
             }
+            getDefaultHistory().remove(id);
         }
+
+        for (Integer subId : epicMap.get(id).getSubTaskId()) {
+            subTaskMap.remove(subId);
+        }
+
         epicMap.remove(id);
     }
 
     @Override
-    public void getEpicTask(int id) {
-        epicMap.get(id);
+    public EpicTask getEpicTask(int id) {
         getDefaultHistory().add(epicMap.get(id));
-    }
-
-    @Override
-    public void updateEpicTask(int id, EpicTask task) {
-        if(epicMap.containsKey(id)){
-            taskMap.replace(id, task);
-        }
-
+        return epicMap.get(id);
     }
 
     //Операции для задач SubTask
     @Override
     public void addSubTask(SubTask task) {
-        if (task.getId() < idGenerate) {
-            task.setId(idGenerate);
-            idGenerate++;
+        if (task.getId() == 0) {
+            if (task.getId() < idGenerate) {
+                task.setId(idGenerate);
+                idGenerate++;
+            }
         }
         subTaskMap.put(task.getId(), task);
+        addToPrioritizedMap(task);
     }
 
     @Override
     public void removeSubTask(int id) {
-        if(getDefaultHistory().getHistory().contains(subTaskMap.get(id))){
+        int epic = 0;
+        ArrayList<Integer> newId = new ArrayList<>();
+
+        if (getDefaultHistory().getHistory().contains(subTaskMap.get(id))) {
             getDefaultHistory().remove(id);
         }
+
+        for (Map.Entry<Integer, EpicTask> task : epicMap.entrySet()){
+            if(task.getValue().getSubTaskId().contains(id)){
+                newId.addAll(task.getValue().getSubTaskId());
+                epic=task.getKey();
+            }
+        }
+        if(epic>0) {
+            newId.remove(Integer.valueOf(id));
+            epicMap.get(epic).removeAllSubTaskId();
+            for (Integer idSub : newId) {
+                setSubTaskForEpic(epicMap.get(epic), idSub);
+            }
+        }
+        prioritizedTask.remove(subTaskMap.get(id).getStartTime());
         subTaskMap.remove(id);
         checkUpdate();
     }
 
+
     @Override
-    public void getSubTask(int id) {
-        subTaskMap.get(id);
+    public SubTask getSubTask(int id) {
         getDefaultHistory().add(subTaskMap.get(id));
+        return subTaskMap.get(id);
     }
 
     @Override
     public void updateSubTask(int id, SubTask task) {
-        if(subTaskMap.containsKey(id)){
+        task.setId(id);
+        if (subTaskMap.containsKey(id)) {
             subTaskMap.replace(id, task);
         }
-
+        prioritizedTask.remove(subTaskMap.get(id).getStartTime());
+        addToPrioritizedMap(task);
         checkUpdate();
     }
 
-    //Получение всех подзадач эпика
-
-    public ArrayList<SubTask> getAllSubTaskOfEpic(int id) {
-        ArrayList<SubTask> subTasksOfEpic = new ArrayList<>();
-        for (Map.Entry<Integer, EpicTask> getSub : epicMap.entrySet()) {
-            if (getSub.getKey() == id) {
-                ArrayList<Integer> idSub = getSub.getValue().getSubTaskId();
-                for (Integer getId : idSub) {
-                    subTasksOfEpic.add(subTaskMap.get(getId));
-                }
-            }
-        }
-        return subTasksOfEpic;
+    @Override
+    public void setSubTaskForEpic(EpicTask task, int id) {
+        task.setSubTaskId(id);
     }
 
     //Изменение статусов эпик-задач

@@ -1,25 +1,31 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class SubTask extends Task{
 
-    private int id;
+    private int id = 0;
 
-    public SubTask(String name, String description, StatusTask status) {
-        super(name, description, status);
+    public SubTask(String name, String description, StatusTask status, Duration duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
+        LocalDateTime endTime = getEndTime();
     }
 
     @Override
     public String toString() {
         return "SUBTASK{" +
-                "name='" + getName() + '\'' +
+                "id=" + getId() +
+                ", name='" + getName()  + '\'' +
                 ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
                 ", status=" + getStatus() +
+                ", duration=" + getStrDuration() +
+                ", startTime=" + getStrStartTime() +
+                ", endTime=" + getStrEndTime() +
                 '}';
     }
 
 }
-
 
 
 
