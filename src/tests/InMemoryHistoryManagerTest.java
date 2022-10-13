@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class InMemoryHistoryManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @BeforeEach
-    void Start_Test() throws FileNotFoundException {
+    public void Start_Test() throws FileNotFoundException {
         taskManager = new InMemoryTaskManager();
         TaskManagerSetUp();
     }
@@ -26,4 +26,5 @@ public class InMemoryHistoryManagerTest extends TaskManagerTest<InMemoryTaskMana
         actual.add(8);
         Assertions.assertEquals(expected, actual);
     }
+
 }

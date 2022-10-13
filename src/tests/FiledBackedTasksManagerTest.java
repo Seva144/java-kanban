@@ -27,28 +27,4 @@ public class FiledBackedTasksManagerTest extends TaskManagerTest<FiledBackedTask
 
         TaskManagerSetUp();
     }
-
-//    @Test
-//    public void Restore_Empty_TaskManager() throws IOException {
-//        File file = new File("src/resources/", "FiledBacked_test1.csv");
-//
-//        FiledBackedTasksManager tasksManager1 = new FiledBackedTasksManager();
-//
-//        task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
-//        epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
-//        subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 9, 0));
-//        subTask2 = new SubTask("Уборка ч.2", "Убрать вещи", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 10, 0));
-//        subTask3 = new SubTask("Уборка ч.3", "Протереть пыль", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 11, 0));
-//
-//
-//
-////       tasksManager1.loadFromFile();
-//    }
-
-
-
-
-
-
-
 }

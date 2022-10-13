@@ -5,10 +5,10 @@ import model.SubTask;
 import model.Task;
 
 import java.io.FileNotFoundException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
 
 public interface TaskManager {
 
@@ -20,7 +20,7 @@ public interface TaskManager {
     HashMap<Integer, SubTask> getAllSubTasksMap();
     HashMap<Integer, EpicTask> getAllEpicTasksMap();
 
-    Map<LocalDateTime, Task> getPrioritizedTasks();
+    List<Task> getPrioritizedTasks();
     void addToPrioritizedMap(Task task);
 
     void removeAllTasks();
