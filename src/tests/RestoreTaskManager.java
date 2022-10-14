@@ -18,7 +18,7 @@ public class RestoreTaskManager {
 
     @Test
     public void Restore_Empty_TaskManager(){
-        File file = new File("src/resources/", "FiledBacked_test1.csv");
+        File file = new File("src/resources/", "FiledBacked_test.csv");
 
         FiledBackedTasksManager tasksManager1 = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
 

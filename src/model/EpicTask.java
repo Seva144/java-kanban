@@ -13,13 +13,13 @@ public class EpicTask extends Task {
 
     private final ArrayList<Integer> subTaskId = new ArrayList<>();
 
-    private int id = 0;
+    private final int id = 0;
+    private final Duration duration = null;
+    private final LocalDateTime startTime = null;
+    private final LocalDateTime endTime = null;
 
     public EpicTask(String name, String description, StatusTask status) {
         super(name, description, status);
-        Duration duration = getDuration();
-        LocalDateTime startTime = getStartTime();
-        LocalDateTime endTime = getEndTime();
     }
 
     HashMap<Integer, SubTask> subTaskMap = getDefault().getAllSubTasksMap();
@@ -38,49 +38,69 @@ public class EpicTask extends Task {
 
     @Override
     public LocalDateTime getStartTime(){
-        LocalDateTime startTime = LocalDateTime.of(0,1,1,0,0);
-        if(getSubTaskId()!=null) {
+        if(!getSubTaskId().isEmpty()) {
+            LocalDateTime startTime = subTaskMap.get(getSubTaskId().get(0)).getStartTime();
             for (Integer idSub : getSubTaskId()) {
                 LocalDateTime newTime = subTaskMap.get(idSub).getStartTime();
-                if (startTime.isBefore(newTime)) startTime = newTime;
+                if (startTime.isAfter(newTime)) startTime = newTime;
             }
+            return startTime;
+        } else {
+            return null;
         }
-        return startTime;
     }
 
     @Override
     public Duration getDuration() {
         long min = 0;
-        if (subTaskId!=null) {
+        if (!getSubTaskId().isEmpty()) {
             for (Integer idSub : subTaskId) {
                 min += subTaskMap.get(idSub).getDuration().toMinutes();
             }
+            return Duration.ofMinutes(min);
+        } else{
+            return null;
         }
-        return Duration.ofMinutes(min);
     }
 
     @Override
     public LocalDateTime getEndTime(){
-        return getStartTime().plus(getDuration());
+        if(getStartTime()!=null){
+            return getStartTime().plus(getDuration());
+        } else{
+            return null;
+        }
     }
 
     @Override
     public String getStrStartTime(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy: HH:mm");
-        return getStartTime().format(formatter);
+        if(getStartTime()!=null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy: HH:mm");
+            return getStartTime().format(formatter);
+        } else{
+            return null;
+        }
     }
 
     @Override
     public String getStrDuration(){
-        LocalTime t = LocalTime.MIDNIGHT.plus(getDuration());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return t.format(formatter);
+        if(getDuration()!=null) {
+            LocalTime t = LocalTime.MIDNIGHT.plus(getDuration());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            return t.format(formatter);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String getStrEndTime(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy: HH:mm");
-        return getEndTime().format(formatter);
+        if(getEndTime()!=null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy: HH:mm");
+            return getEndTime().format(formatter);
+        } else{
+            return null;
+        }
     }
 
     @Override

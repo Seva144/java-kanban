@@ -7,8 +7,8 @@ import model.StatusTask;
 import model.SubTask;
 import model.Task;
 import java.util.*;
-import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
 import static taskManager.Managers.getDefaultHistory;
 
 
@@ -22,18 +22,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Создание и получение списка в порядке приоритета
 
-    Comparator<Task> comparator = Comparator.comparing(Task::getStartTime);
+    Comparator<Task> comparator = comparing(Task::getStartTime);
 
-    List<Task> prioritizedTask = new ArrayList<>();
+    Set<Task> prioritizedTask = new TreeSet<>(comparator);
 
     public List<Task> getPrioritizedTasks() {
-        return prioritizedTask;
+        return new ArrayList<>(prioritizedTask);
     }
 
     public void addToPrioritizedMap(Task task) {
         prioritizedTask.removeIf(del -> del.getId() == task.getId());
         prioritizedTask.add(task);
-        prioritizedTask.sort(comparator);
         try {
             checkIntersections();
         } catch (TaskException e) {
@@ -42,8 +41,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void checkIntersections() throws TaskException {
-        for (int i = 0; i < prioritizedTask.size() - 2 + 1; i++) {
-            if ((prioritizedTask.get(i).getEndTime().isAfter(prioritizedTask.get(i + 1).getStartTime()))) {
+        for (int i = 0; i < getPrioritizedTasks().size() - 2 + 1; i++) {
+            if ((getPrioritizedTasks().get(i).getEndTime().isAfter(getPrioritizedTasks().get(i + 1).getStartTime()))) {
                 throw new TaskException("Пересечение по времени");
             }
         }
@@ -153,7 +152,6 @@ public class InMemoryTaskManager implements TaskManager {
     //Операции для задач EpicTask
     @Override
     public void addEpicTask(EpicTask task) {
-        task.setStatus(StatusTask.NEW);
         if (task.getId() == 0) {
             if (task.getId() < idGenerate) {
                 task.setId(idGenerate);

@@ -11,8 +11,10 @@ import taskManager.InMemoryTaskManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
+import java.util.List;
 
 public class PrioritizedTaskTest {
+
 
     @Test
     public void Test_List_Of_PrioritizedTask() {
@@ -27,14 +29,21 @@ public class PrioritizedTaskTest {
         taskManager.addSubTask(subTask2);
         taskManager.addSubTask(subTask3);
 
-        LinkedList<Task> actual = new LinkedList<>();
+        List<Task> tasks = taskManager.getPrioritizedTasks();
 
-        actual.add(task1);
-        actual.add(subTask1);
-        actual.add(subTask2);
-        actual.add(subTask3);
+        Assertions.assertNotNull(tasks, "Задачи в порядке приоритета возвращаются");
+        Assertions.assertEquals(4, tasks.size(), "Все задачи в порядке приоритета кроме эпика");
+        Assertions.assertEquals(task1, tasks.get(0), "Первая - обычная задача");
+        Assertions.assertEquals(subTask1, tasks.get(1), "Вторая - подзадача");
 
-        Assertions.assertEquals(taskManager.getPrioritizedTasks(),actual);
+        Task updateTask = new Task("Завтрак", "Позавтракать", StatusTask.DONE, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 8, 0));
+        updateTask.setStartTime(subTask1.getEndTime());
+        taskManager.updateTask(task1.getId(),updateTask);
+        tasks = taskManager.getPrioritizedTasks();
+        Assertions.assertNotNull(tasks, "Задачи в порядке приоритета возвращаются");
+        Assertions.assertEquals(4, tasks.size(), "Все задачи в порядке приоритета кроме эпика");
+        Assertions.assertEquals(subTask1, tasks.get(0), "Первая - обычная задача");
+        Assertions.assertEquals(updateTask, tasks.get(1), "Вторая - подзадача");
     }
 
     @Test
