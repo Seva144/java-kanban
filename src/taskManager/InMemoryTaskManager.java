@@ -6,6 +6,9 @@ import model.EpicTask;
 import model.StatusTask;
 import model.SubTask;
 import model.Task;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.Comparator.comparing;
@@ -31,13 +34,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void addToPrioritizedMap(Task task) {
-        prioritizedTask.removeIf(del -> del.getId() == task.getId());
-        prioritizedTask.add(task);
         try {
             checkIntersections();
         } catch (TaskException e) {
             System.err.println(e.getMessage());
         }
+        prioritizedTask.removeIf(del -> del.getId() == task.getId());
+        prioritizedTask.add(task);
     }
 
     public void checkIntersections() throws TaskException {
@@ -145,7 +148,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskMap.containsKey(id)) {
             taskMap.replace(id, task);
         }
-        prioritizedTask.remove(taskMap.get(id));
+//        prioritizedTask.remove(taskMap.get(id));
         addToPrioritizedMap(task);
     }
 
@@ -198,33 +201,34 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subTaskMap.put(task.getId(), task);
         addToPrioritizedMap(task);
+        updateTimeEpics();
     }
 
     @Override
     public void removeSubTask(int id) {
-        int epic = 0;
-        ArrayList<Integer> newId = new ArrayList<>();
+        int epic = returnEpicId(id);
 
+        //1 - очистка истории
         if (getDefaultHistory().getHistory().contains(subTaskMap.get(id))) {
             getDefaultHistory().remove(id);
         }
-
-        for (Map.Entry<Integer, EpicTask> task : epicMap.entrySet()){
-            if(task.getValue().getSubTaskId().contains(id)){
-                newId.addAll(task.getValue().getSubTaskId());
-                epic=task.getKey();
-            }
-        }
+        //2 - обновление idSubTask эпика
         if(epic>0) {
+            ArrayList<Integer> newId = epicMap.get(epic).getSubTaskId();
             newId.remove(Integer.valueOf(id));
             epicMap.get(epic).removeAllSubTaskId();
             for (Integer idSub : newId) {
                 setSubTaskForEpic(epicMap.get(epic), idSub);
             }
         }
+        //3 - удаление из prioritizedTask
         prioritizedTask.remove(subTaskMap.get(id));
+        //4 - удаление из коллекции субТасков
         subTaskMap.remove(id);
-        checkUpdate();
+        //5 - обновление статуса эпика
+        updateStatusEpics();
+        //6 - обновление времени эпика
+        updateTimeEpics();
     }
 
 
@@ -242,17 +246,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
         prioritizedTask.remove(task);
         addToPrioritizedMap(task);
-        checkUpdate();
+        updateStatusEpics();
+        setSubTaskForEpic(epicMap.get(returnEpicId(id)), id);
     }
 
-    @Override
-    public void setSubTaskForEpic(EpicTask task, int id) {
-        task.setSubTaskId(id);
-    }
+    //Изменение статусов эпик-задач, времени и добавление idSubTask
 
-    //Изменение статусов эпик-задач
-
-    public void checkUpdate() {
+    public void updateStatusEpics() {
         for (Map.Entry<Integer, EpicTask> checkEpic : epicMap.entrySet()) {
             ArrayList<Integer> addSub = checkEpic.getValue().getSubTaskId();
             ArrayList<StatusTask> statusList = new ArrayList<>();
@@ -269,5 +269,50 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
+    }
+
+    public void updateTimeEpics(){
+        for(Map.Entry<Integer, EpicTask> taskEpic : epicMap.entrySet()) {
+            ArrayList<Integer> subTaskEpic = taskEpic.getValue().getSubTaskId();
+            if(!subTaskEpic.isEmpty()) {
+                // 1 - обновление startTime
+                LocalDateTime startTime = subTaskMap.get(subTaskEpic.get(0)).getStartTime();
+                for (Integer idSub : subTaskEpic) {
+                    LocalDateTime newTime = subTaskMap.get(subTaskEpic.get(0)).getStartTime();
+                    if (startTime.isAfter(newTime)) startTime = newTime;
+                }
+                taskEpic.getValue().setStartTime(startTime);
+                //2 - обновление duration
+                long min = 0;
+                for (Integer idSub : subTaskEpic) {
+                    min = min + subTaskMap.get(idSub).getDuration().toMinutes();
+                }
+                taskEpic.getValue().setDuration(Duration.ofMinutes(min));
+                //3 - обновление endTime
+                LocalDateTime endTime = subTaskMap.get(subTaskEpic.get(0)).getStartTime();
+                for (Integer idSub : subTaskEpic) {
+                    LocalDateTime newTime = subTaskMap.get(idSub).getStartTime();
+                    if (endTime.isBefore(newTime)) endTime = newTime;
+                }
+                taskEpic.getValue().setEndTime(endTime.plus(taskEpic.getValue().getDuration()));
+            }
+        }
+    }
+
+
+    public int returnEpicId(int id){
+        int epic = 0;
+        for (Map.Entry<Integer, EpicTask> task : epicMap.entrySet()){
+            if(task.getValue().getSubTaskId().contains(id)){
+                epic=task.getKey();
+            }
+        }
+        return epic;
+    }
+
+    @Override
+    public void setSubTaskForEpic(EpicTask task, int id) {
+        task.setSubTaskId(id);
+        updateTimeEpics();
     }
 }

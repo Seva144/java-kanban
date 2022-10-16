@@ -16,21 +16,6 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
         FiledBackedTasksManager.file = file;
     }
 
-    public void print() throws IOException {
-        ArrayList<String> print = new ArrayList<>();
-        FileReader reader = new FileReader(file);
-        BufferedReader br = new BufferedReader(reader);
-        while (br.ready()) {
-            String line = br.readLine();
-            print.add(line);
-        }
-        br.close();
-
-        for (String line : print) {
-            System.out.println(line);
-        }
-    }
-
     public void loadFromFile() throws IOException {
         List<String> data = new LinkedList<>();
         FileReader reader = new FileReader(file);
@@ -76,16 +61,16 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     public void save() throws FileNotFoundException {
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println(getHeader());
+            for (Map.Entry<Integer, EpicTask> task : getAllEpicTasksMap().entrySet()) {
+                String getSubId = String.valueOf(task.getValue().getSubTaskId()).replaceAll("\\s", "");
+                printWriter.println(intoString(task.getValue()) + "," + getSubId.substring
+                        (getSubId.indexOf("[") + 1, getSubId.lastIndexOf("]")));
+            }
             for (Map.Entry<Integer, Task> task : getAllTasksMap().entrySet()) {
                 printWriter.println(intoString(task.getValue()));
             }
             for (Map.Entry<Integer, SubTask> task : getAllSubTasksMap().entrySet()) {
                 printWriter.println(intoString(task.getValue()));
-            }
-            for (Map.Entry<Integer, EpicTask> task : getAllEpicTasksMap().entrySet()) {
-                String getSubId = String.valueOf(task.getValue().getSubTaskId()).replaceAll("\\s", "");
-                printWriter.println(intoString(task.getValue()) + "," + getSubId.substring
-                        (getSubId.indexOf("[") + 1, getSubId.lastIndexOf("]")));
             }
             printWriter.println(" ");
             printWriter.println(historyToString(getDefaultHistory()));
@@ -244,4 +229,19 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
             e.printStackTrace();
         }
     }
+
+//    public void print() throws IOException {
+//        ArrayList<String> print = new ArrayList<>();
+//        FileReader reader = new FileReader(file);
+//        BufferedReader br = new BufferedReader(reader);
+//        while (br.ready()) {
+//            String line = br.readLine();
+//            print.add(line);
+//        }
+//        br.close();
+//
+//        for (String line : print) {
+//            System.out.println(line);
+//        }
+//    }
 }

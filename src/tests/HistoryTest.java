@@ -36,9 +36,9 @@ public class HistoryTest {
 
         taskManagerHistory1.addTask(task1);
         taskManagerHistory1.addTask(task2);
+        taskManagerHistory1.addEpicTask(epicTask1);
         taskManagerHistory1.addSubTask(subTask1);
         taskManagerHistory1.addSubTask(subTask2);
-        taskManagerHistory1.addEpicTask(epicTask1);
 
         List<Task> actual = new ArrayList<>();
 
@@ -58,9 +58,10 @@ public class HistoryTest {
 
         taskManagerHistory.addTask(task1);
         taskManagerHistory.addTask(task2);
+        taskManagerHistory.addEpicTask(epicTask1);
         taskManagerHistory.addSubTask(subTask1);
         taskManagerHistory.addSubTask(subTask2);
-        taskManagerHistory.addEpicTask(epicTask1);
+
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task1.getId());
@@ -90,9 +91,10 @@ public class HistoryTest {
 
         taskManagerHistory.addTask(task1);
         taskManagerHistory.addTask(task2);
+        taskManagerHistory.addEpicTask(epicTask1);
         taskManagerHistory.addSubTask(subTask1);
         taskManagerHistory.addSubTask(subTask2);
-        taskManagerHistory.addEpicTask(epicTask1);
+
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());
@@ -129,9 +131,10 @@ public class HistoryTest {
 
         taskManagerHistory.addTask(task1);
         taskManagerHistory.addTask(task2);
+        taskManagerHistory.addEpicTask(epicTask1);
         taskManagerHistory.addSubTask(subTask1);
         taskManagerHistory.addSubTask(subTask2);
-        taskManagerHistory.addEpicTask(epicTask1);
+
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());
@@ -168,9 +171,10 @@ public class HistoryTest {
 
         taskManagerHistory.addTask(task1);
         taskManagerHistory.addTask(task2);
+        taskManagerHistory.addEpicTask(epicTask1);
         taskManagerHistory.addSubTask(subTask1);
         taskManagerHistory.addSubTask(subTask2);
-        taskManagerHistory.addEpicTask(epicTask1);
+
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());

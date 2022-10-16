@@ -6,23 +6,14 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
-import static taskManager.Managers.getDefault;
-
 public class EpicTask extends Task {
 
     private final ArrayList<Integer> subTaskId = new ArrayList<>();
 
-    private final int id = 0;
-    private final Duration duration = null;
-    private final LocalDateTime startTime = null;
-    private final LocalDateTime endTime = null;
 
     public EpicTask(String name, String description, StatusTask status) {
         super(name, description, status);
     }
-
-    HashMap<Integer, SubTask> subTaskMap = getDefault().getAllSubTasksMap();
 
     public ArrayList<Integer> getSubTaskId() {
         return subTaskId;
@@ -39,12 +30,7 @@ public class EpicTask extends Task {
     @Override
     public LocalDateTime getStartTime(){
         if(!getSubTaskId().isEmpty()) {
-            LocalDateTime startTime = subTaskMap.get(getSubTaskId().get(0)).getStartTime();
-            for (Integer idSub : getSubTaskId()) {
-                LocalDateTime newTime = subTaskMap.get(idSub).getStartTime();
-                if (startTime.isAfter(newTime)) startTime = newTime;
-            }
-            return startTime;
+            return super.getStartTime();
         } else {
             return null;
         }
@@ -52,12 +38,8 @@ public class EpicTask extends Task {
 
     @Override
     public Duration getDuration() {
-        long min = 0;
         if (!getSubTaskId().isEmpty()) {
-            for (Integer idSub : subTaskId) {
-                min += subTaskMap.get(idSub).getDuration().toMinutes();
-            }
-            return Duration.ofMinutes(min);
+            return super.getDuration();
         } else{
             return null;
         }
@@ -66,7 +48,7 @@ public class EpicTask extends Task {
     @Override
     public LocalDateTime getEndTime(){
         if(getStartTime()!=null){
-            return getStartTime().plus(getDuration());
+            return super.getEndTime();
         } else{
             return null;
         }
@@ -115,6 +97,20 @@ public class EpicTask extends Task {
                 ", startTime=" + getStrStartTime() +
                 ", endTime=" + getStrEndTime() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EpicTask)) return false;
+        if (!super.equals(o)) return false;
+        EpicTask epicTask = (EpicTask) o;
+        return Objects.equals(getSubTaskId(), epicTask.getSubTaskId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getSubTaskId());
     }
 }
 

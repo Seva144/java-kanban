@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Task {
 
@@ -24,13 +25,13 @@ public class Task {
         this.endTime = getEndTime();
     }
 
-
     public Task(String name, String description, StatusTask status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
+    //геттеры описывающие объект
     public String getName() {
         return name;
     }
@@ -47,6 +48,7 @@ public class Task {
         return status;
     }
 
+    //геттеры времени
     public Duration getDuration() {
         return duration;
     }
@@ -59,6 +61,29 @@ public class Task {
         return this.startTime.plus(this.duration);
     }
 
+    //сеттеры для описания объекта
+    public void setStatus(StatusTask status) {
+        this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    //сеттеры времени
+    public void setDuration(Duration duration) {
+        this.duration = Duration.ofMinutes(duration.toMinutes());
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    //геттеры для toString
     public String getStrEndTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy: HH:mm");
         return this.endTime.format(formatter);
@@ -75,14 +100,6 @@ public class Task {
         return this.startTime.format(formatter);
     }
 
-    public void setStatus(StatusTask status) {
-        this.status = status;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "Task{" +
@@ -96,15 +113,23 @@ public class Task {
                 '}';
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task)) return false;
+
+        Task task = (Task) o;
+
+        if (getId() != task.getId()) return false;
+        if (getName() != null ? !getName().equals(task.getName()) : task.getName() != null) return false;
+        return getDescription() != null ? getDescription().equals(task.getDescription()) : task.getDescription() == null;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    @Override
+    public int hashCode() {
+        int result = getId();
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        return result;
     }
 }

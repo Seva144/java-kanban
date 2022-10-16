@@ -7,22 +7,14 @@ import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import taskManager.FiledBackedTasksManager;
-
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.util.Calendar.*;
-import static taskManager.Managers.getDefault;
-import static taskManager.Managers.getDefaultHistory;
-
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -195,9 +187,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertFalse(taskManager.getAllTasks().contains(task1));
 
         //Неверный идентификатор
-        taskManager.removeTask(45);
 
-//        Assertions.assertThrows(NullPointerException.class, () -> taskManager.removeTask(12));
+        Assertions.assertThrows(NullPointerException.class, () -> taskManager.removeTask(12));
     }
 
     @Test
@@ -220,7 +211,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskNew.setId(112);
 
         //Неверный идентификатор
-        Assertions.assertDoesNotThrow(() -> taskManager.updateTask(taskNew.getId(), taskNew));
+        Assertions.assertThrows(NullPointerException.class, () -> taskManager.updateTask(122, taskNew));
     }
 
     //Операции для задач SubTask
@@ -236,7 +227,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertFalse(taskManager.getAllSubTasks().contains(subTask1));
 
         //Неверный идентификатор
-        Assertions.assertDoesNotThrow( () -> taskManager.removeSubTask(12));
+        Assertions.assertThrows(NullPointerException.class, () -> taskManager.removeSubTask(12));
     }
 
     @Test
@@ -256,7 +247,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertTrue(taskManager.getAllSubTasks().contains(updateSubTask1));
 
         //Неверный идентификатор
-        Assertions.assertDoesNotThrow(() -> taskManager.updateSubTask(14, updateSubTask1));
+        Assertions.assertThrows(NullPointerException.class, () -> taskManager.updateSubTask(14, updateSubTask1));
     }
 
     //Операции для задач EpicTask
@@ -327,8 +318,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         //Неверный идентификатор
         Assertions.assertThrows(NullPointerException.class, () -> taskManager.getEpicTask(12));
     }
-
-
 
 //    @Test
 //    public void GetPrioritizedTasks() {

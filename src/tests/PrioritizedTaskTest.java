@@ -1,6 +1,5 @@
 package tests;
 
-import Exceptions.TaskException;
 import model.StatusTask;
 import model.SubTask;
 import model.Task;
@@ -36,18 +35,23 @@ public class PrioritizedTaskTest {
         Assertions.assertEquals(task1, tasks.get(0), "Первая - обычная задача");
         Assertions.assertEquals(subTask1, tasks.get(1), "Вторая - подзадача");
 
-        Task updateTask = new Task("Завтрак", "Позавтракать", StatusTask.DONE, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 8, 0));
-        updateTask.setStartTime(subTask1.getEndTime());
-        taskManager.updateTask(task1.getId(),updateTask);
+        int hashCode1 = task1.hashCode(); // первый хеш код
+
+        task1.setStartTime(subTask1.getEndTime());
+        taskManager.updateTask(task1.getId(), task1);
+
+        int hashCode2 = taskManager.getTask(task1.getId()).hashCode(); // второй хеш код
+
         tasks = taskManager.getPrioritizedTasks();
         Assertions.assertNotNull(tasks, "Задачи в порядке приоритета возвращаются");
         Assertions.assertEquals(4, tasks.size(), "Все задачи в порядке приоритета кроме эпика");
         Assertions.assertEquals(subTask1, tasks.get(0), "Первая - обычная задача");
-        Assertions.assertEquals(updateTask, tasks.get(1), "Вторая - подзадача");
+        Assertions.assertEquals(task1, tasks.get(1), "Вторая - подзадача");
+        Assertions.assertEquals(hashCode1,hashCode2); //проверка hashcode
     }
 
     @Test
-    public void Test_List_Of_PrioritizedTask_After_DeleteTask(){
+    public void Test_List_Of_PrioritizedTask_After_DeleteTask() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         Task task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 8, 0));
         SubTask subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 9, 0));
@@ -67,11 +71,11 @@ public class PrioritizedTaskTest {
         actual.add(subTask1);
         actual.add(subTask3);
 
-        Assertions.assertEquals(taskManager.getPrioritizedTasks(),actual);
+        Assertions.assertEquals(taskManager.getPrioritizedTasks(), actual);
     }
 
     @Test
-    public void Throw_Exception_After_Add(){
+    public void Throw_Exception_After_Add() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         Task task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 8, 0));
         SubTask subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(55), LocalDateTime.of(2022, 1, 1, 9, 0));
