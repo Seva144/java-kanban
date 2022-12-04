@@ -58,11 +58,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addSubTask(subTask4);
         taskManager.addSubTask(subTask5);
 
-        taskManager.setSubTaskForEpic(epicTask1, subTask1.getId());
-        taskManager.setSubTaskForEpic(epicTask1, subTask2.getId());
-        taskManager.setSubTaskForEpic(epicTask1, subTask3.getId());
-        taskManager.setSubTaskForEpic(epicTask2, subTask4.getId());
-        taskManager.setSubTaskForEpic(epicTask2, subTask5.getId());
+        taskManager.setSubTaskForEpic(epicTask1.getId(), subTask1.getId());
+        taskManager.setSubTaskForEpic(epicTask1.getId(), subTask2.getId());
+        taskManager.setSubTaskForEpic(epicTask1.getId(), subTask3.getId());
+        taskManager.setSubTaskForEpic(epicTask2.getId(), subTask4.getId());
+        taskManager.setSubTaskForEpic(epicTask2.getId(), subTask5.getId());
+
     }
 
     @Test
@@ -319,40 +320,4 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertThrows(NullPointerException.class, () -> taskManager.getEpicTask(12));
     }
 
-//    @Test
-//    public void GetPrioritizedTasks() {
-//        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-//
-//        Task task1 = new Task("Посмотреть фильм", "Посмотреть Star Wars", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, JUNE, 11, 12, 0));
-//        Task task2 = new Task("Сходить в магазин", "Купить продукты", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, JUNE, 14, 14, 0));
-//
-//        EpicTask epicTask1 = new EpicTask("Ремонт", "Ремонт кухни");
-//        EpicTask epicTask2 = new EpicTask("Отдых", "Сходить в кино");
-//
-//        SubTask subTask1 = new SubTask("Техника", "Купить бытовую технику", StatusTask.NEW, Duration.ofMinutes(180), LocalDateTime.of(2022, JUNE, 10, 10, 0));
-//        SubTask subTask2 = new SubTask("Сборка кухни", "Собрать кухню", StatusTask.NEW, Duration.ofMinutes(400), LocalDateTime.of(2022, JUNE, 10, 14, 0));
-//        SubTask subTask3 = new SubTask("Билеты", "Найти билеты", StatusTask.NEW, Duration.ofMinutes(30), LocalDateTime.of(2022, JULY, 10, 8, 0));
-//        SubTask subTask4 = new SubTask("Кино", "Просмотр кино", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, JULY, 10, 13, 0));
-//
-//        taskManager.addTask(task1);
-//        taskManager.addTask(task2);
-//
-//        taskManager.addEpicTask(epicTask1);
-//        taskManager.addEpicTask(epicTask2);
-//
-//        taskManager.addSubTask(subTask1);
-//        taskManager.addSubTask(subTask2);
-//        taskManager.addSubTask(subTask3);
-//        taskManager.addSubTask(subTask4);
-//
-//        epicTask1.setSubTaskId(subTask1.getId());
-//        epicTask1.setSubTaskId(subTask2.getId());
-//        epicTask2.setSubTaskId(subTask3.getId());
-//        epicTask2.setSubTaskId(subTask4.getId());
-//
-//
-//        System.out.println(getDefault().getPrioritizedTasks());
-//
-//
-//    }
 }

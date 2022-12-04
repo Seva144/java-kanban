@@ -6,10 +6,11 @@ import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import taskManager.FiledBackedTasksManager;
+import taskManager.FileBackedTasksManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -17,10 +18,9 @@ import java.util.Map;
 public class RestoreTaskManager {
 
     @Test
-    public void Restore_Empty_TaskManager(){
-        File file = new File("src/resources/", "FiledBacked_test.csv");
+    public void Restore_Empty_TaskManager() throws IOException {
 
-        FiledBackedTasksManager tasksManager1 = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
+        FileBackedTasksManager tasksManager1 = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         Task task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
         EpicTask epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
@@ -29,7 +29,7 @@ public class RestoreTaskManager {
         SubTask subTask3 = new SubTask("Уборка ч.3", "Протереть пыль", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 11, 0));
 
         try {
-            tasksManager1.loadFromFile();
+            FileBackedTasksManager.load(Path.of("src/resources/FiledBacked.csv"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,19 +37,19 @@ public class RestoreTaskManager {
     }
 
     @Test
-    public void Restore_EpicWithoutSubtasks(){
+    public void Restore_EpicWithoutSubtasks() throws IOException {
 
-        FiledBackedTasksManager tasksManagerSave = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
+        FileBackedTasksManager tasksManagerSave = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         EpicTask epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
 
         tasksManagerSave.addEpicTask(epicTask1);
         tasksManagerSave.getEpicTask(epicTask1.getId());
 
-        FiledBackedTasksManager tasksManagerLoad = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
+        FileBackedTasksManager tasksManagerLoad = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         try {
-            tasksManagerSave.loadFromFile();
+            FileBackedTasksManager.load(Path.of("src/resources/FiledBacked.csv"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,18 +66,18 @@ public class RestoreTaskManager {
     }
 
     @Test
-    public void Restore_WithoutHistory(){
+    public void Restore_WithoutHistory() throws IOException {
 
-        FiledBackedTasksManager tasksManagerSave = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
+        FileBackedTasksManager tasksManagerSave = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         EpicTask epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
 
         tasksManagerSave.addEpicTask(epicTask1);
 
-        FiledBackedTasksManager tasksManagerLoad = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked_test.csv"));
+        FileBackedTasksManager tasksManagerLoad = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         try {
-            tasksManagerSave.loadFromFile();
+            FileBackedTasksManager.load(Path.of("src/resources/FiledBacked.csv"));
         } catch (IOException e) {
             e.printStackTrace();
         }

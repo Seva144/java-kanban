@@ -1,16 +1,16 @@
 package tests;
 
 import org.junit.jupiter.api.BeforeEach;
-import taskManager.FiledBackedTasksManager;
+import taskManager.FileBackedTasksManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
-public class FiledBackedTasksManagerTest extends TaskManagerTest<FiledBackedTasksManager>{
+public class FiledBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>{
 
     @BeforeEach
-    public void Start_Test() throws FileNotFoundException {
-        taskManager = new FiledBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
+    public void Start_Test() throws IOException {
+        taskManager = new FileBackedTasksManager(new File("src/resources/", "FiledBacked.csv"));
 
         TaskManagerSetUp();
     }

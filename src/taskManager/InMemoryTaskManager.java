@@ -7,6 +7,7 @@ import model.StatusTask;
 import model.SubTask;
 import model.Task;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,7 +18,15 @@ import static taskManager.Managers.getDefaultHistory;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private int idGenerate = 1;
+    public int getIdGenerate() {
+        return idGenerate;
+    }
+
+    public void setIdGenerate(int idGenerate) {
+        this.idGenerate = idGenerate;
+    }
+
+    private int idGenerate=1;
 
     protected static HashMap<Integer, Task> taskMap = new HashMap<>();
     protected static HashMap<Integer, EpicTask> epicMap = new HashMap<>();
@@ -148,7 +157,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskMap.containsKey(id)) {
             taskMap.replace(id, task);
         }
-//        prioritizedTask.remove(taskMap.get(id));
         addToPrioritizedMap(task);
     }
 
@@ -218,7 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
             newId.remove(Integer.valueOf(id));
             epicMap.get(epic).removeAllSubTaskId();
             for (Integer idSub : newId) {
-                setSubTaskForEpic(epicMap.get(epic), idSub);
+                setSubTaskForEpic(epicMap.get(epic).getId(), idSub);
             }
         }
         //3 - удаление из prioritizedTask
@@ -247,7 +255,7 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTask.remove(task);
         addToPrioritizedMap(task);
         updateStatusEpics();
-        setSubTaskForEpic(epicMap.get(returnEpicId(id)), id);
+        setSubTaskForEpic(epicMap.get(returnEpicId(id)).getId(), id);
     }
 
     //Изменение статусов эпик-задач, времени и добавление idSubTask
@@ -299,7 +307,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
     public int returnEpicId(int id){
         int epic = 0;
         for (Map.Entry<Integer, EpicTask> task : epicMap.entrySet()){
@@ -311,8 +318,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void setSubTaskForEpic(EpicTask task, int id) {
-        task.setSubTaskId(id);
+    public void setSubTaskForEpic(int idEpic, int idSub) {
+        getAllEpicTasksMap().get(idEpic).setSubTaskId(idSub);
         updateTimeEpics();
+    }
+
+    @Override
+    public void loadFromFile() throws IOException {
     }
 }

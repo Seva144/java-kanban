@@ -3,22 +3,29 @@ package taskManager;
 import model.*;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import static taskManager.CSVFormatter.*;
 import static taskManager.Managers.getDefaultHistory;
 
-public class FiledBackedTasksManager extends InMemoryTaskManager {
+public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private static File file;
 
-    public FiledBackedTasksManager(File file) {
-        FiledBackedTasksManager.file = file;
+    public FileBackedTasksManager(File file) {
+        FileBackedTasksManager.file = file;
     }
 
-    public void loadFromFile() throws IOException {
+    public FileBackedTasksManager(){
+
+    }
+
+    public static FileBackedTasksManager load(Path path) throws IOException {
+        FileBackedTasksManager loadManager = new FileBackedTasksManager(path.toFile());
+        int idManager = 0;
         List<String> data = new LinkedList<>();
-        FileReader reader = new FileReader(file);
+        FileReader reader = new FileReader(path.toFile());
         BufferedReader br = new BufferedReader(reader);
         while (br.ready()) {
             String line = br.readLine();
@@ -32,13 +39,13 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
                 TaskType taskType = TaskType.valueOf(line[1]);
                 switch (taskType) {
                     case TASK:
-                        addTask(fromString(data.get(i)));
+                        loadManager.addTask(fromString(data.get(i)));
                         break;
                     case SUBTASK:
-                        addSubTask(fromString(data.get(i)));
+                        loadManager.addSubTask(fromString(data.get(i)));
                         break;
                     case EPICTASK:
-                        addEpicTask(fromString(data.get(i)));
+                        loadManager.addEpicTask(fromString(data.get(i)));
                         break;
                 }
             }
@@ -46,17 +53,32 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
         if(!Objects.equals(data.get(data.size() - 1), "")) {
             List<Integer> history = historyFromString(data.get(data.size() - 1));
             for (Integer id : history) {
-                if (getAllTasksMap().containsKey(id)) {
-                    getDefaultHistory().add(getAllTasksMap().get(id));
-                } else if (getAllSubTasksMap().containsKey(id)) {
-                    getDefaultHistory().add(getAllSubTasksMap().get(id));
-                } else if (getAllEpicTasksMap().containsKey(id)) {
-                    getDefaultHistory().add(getAllEpicTasksMap().get(id));
+                if (loadManager.getAllTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(loadManager.getAllTasksMap().get(id));
+                } else if (loadManager.getAllSubTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(loadManager.getAllSubTasksMap().get(id));
+                } else if (loadManager.getAllEpicTasksMap().containsKey(id)) {
+                    getDefaultHistory().add(loadManager.getAllEpicTasksMap().get(id));
                 }
             }
         }
-    }
+        for(Map.Entry<Integer, Task> task : loadManager.getAllTasksMap().entrySet()){
+            int idTask = task.getKey();
+            if(idTask>idManager) idManager = idTask;
+        }
+        for(Map.Entry<Integer, SubTask> task : loadManager.getAllSubTasksMap().entrySet()){
+            int idTask = task.getKey();
+            if(idTask>idManager) idManager = idTask;
+        }
+        for(Map.Entry<Integer, EpicTask> task : loadManager.getAllEpicTasksMap().entrySet()){
+            int idTask = task.getKey();
+            if(idTask>idManager) idManager = idTask;
+        }
+        idManager += 1;
+        loadManager.setIdGenerate(idManager);
 
+        return loadManager;
+    }
 
     public void save() throws FileNotFoundException {
         try (PrintWriter printWriter = new PrintWriter(file)) {
@@ -221,8 +243,8 @@ public class FiledBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void setSubTaskForEpic(EpicTask task, int id) {
-        super.setSubTaskForEpic(task, id);
+    public void setSubTaskForEpic(int idEpic, int idSub) {
+        super.setSubTaskForEpic(idEpic, idSub);
         try {
             save();
         } catch (FileNotFoundException e) {

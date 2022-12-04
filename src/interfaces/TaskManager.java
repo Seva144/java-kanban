@@ -5,6 +5,7 @@ import model.SubTask;
 import model.Task;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,8 @@ public interface TaskManager {
     SubTask getSubTask(int id);
     void updateSubTask(int id, SubTask task);
 
-    void setSubTaskForEpic(EpicTask task,int id) throws FileNotFoundException;
+    void setSubTaskForEpic(int idEpic,int idSub) throws FileNotFoundException;
+
+    void loadFromFile()throws IOException;
 }
 

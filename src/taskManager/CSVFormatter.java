@@ -50,12 +50,12 @@ public class CSVFormatter {
         String name = list.get(2);
         StatusTask status = StatusTask.valueOf(list.get(3));
         String description = list.get(4);
-        int duration = 1;
-        int year = 1;
-        int month = 1;
-        int day = 1;
-        int hours = 1;
-        int minutes = 1;
+        int duration = 0;
+        int year = 0;
+        int month = 0;
+        int day = 0;
+        int hours = 0;
+        int minutes = 0;
         if (!Objects.equals(list.get(5), "null")) {
             duration = Integer.parseInt(list.get(5));
         }

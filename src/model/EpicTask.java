@@ -10,10 +10,10 @@ public class EpicTask extends Task {
 
     private final ArrayList<Integer> subTaskId = new ArrayList<>();
 
-
     public EpicTask(String name, String description, StatusTask status) {
         super(name, description, status);
     }
+
 
     public ArrayList<Integer> getSubTaskId() {
         return subTaskId;
