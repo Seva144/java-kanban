@@ -1,6 +1,6 @@
 package taskManager;
 
-import Exceptions.TaskException;
+import exceptions.TaskException;
 import interfaces.TaskManager;
 import model.EpicTask;
 import model.StatusTask;

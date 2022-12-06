@@ -5,6 +5,7 @@ import model.StatusTask;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import taskManager.InMemoryTaskManager;
 
@@ -23,32 +24,12 @@ public class HistoryTest {
     SubTask subTask2;
     Task task2;
 
-    @Test
-    public void Empty_History(){
+    InMemoryTaskManager taskManagerHistory;
 
-        InMemoryTaskManager taskManagerHistory1 = new InMemoryTaskManager();
+    @BeforeEach
+    public void Set_Up_History(){
 
-        task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
-        task2 = new Task("Обед", "Пообедать", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, 1, 1, 12, 0));
-        subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 9, 0));
-        subTask2 = new SubTask("Уборка ч.2", "Убрать вещи", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 10, 0));
-        epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
-
-        taskManagerHistory1.addTask(task1);
-        taskManagerHistory1.addTask(task2);
-        taskManagerHistory1.addEpicTask(epicTask1);
-        taskManagerHistory1.addSubTask(subTask1);
-        taskManagerHistory1.addSubTask(subTask2);
-
-        List<Task> actual = new ArrayList<>();
-
-        Assertions.assertEquals(getDefaultHistory().getHistory(), actual);
-    }
-
-    @Test
-    public void Duplication_History(){
-
-        InMemoryTaskManager taskManagerHistory = new InMemoryTaskManager();
+        taskManagerHistory = new InMemoryTaskManager();
 
         task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
         task2 = new Task("Обед", "Пообедать", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, 1, 1, 12, 0));
@@ -61,7 +42,18 @@ public class HistoryTest {
         taskManagerHistory.addEpicTask(epicTask1);
         taskManagerHistory.addSubTask(subTask1);
         taskManagerHistory.addSubTask(subTask2);
+    }
 
+    @Test
+    public void Empty_History(){
+
+        List<Task> actual = new ArrayList<>();
+
+        Assertions.assertEquals(getDefaultHistory().getHistory(), actual);
+    }
+
+    @Test
+    public void Duplication_History(){
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task1.getId());
@@ -81,20 +73,6 @@ public class HistoryTest {
 
     @Test
     public void Remove_From_History_Head(){
-        InMemoryTaskManager taskManagerHistory = new InMemoryTaskManager();
-
-        task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
-        task2 = new Task("Обед", "Пообедать", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, 1, 1, 12, 0));
-        subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 9, 0));
-        subTask2 = new SubTask("Уборка ч.2", "Убрать вещи", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 10, 0));
-        epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
-
-        taskManagerHistory.addTask(task1);
-        taskManagerHistory.addTask(task2);
-        taskManagerHistory.addEpicTask(epicTask1);
-        taskManagerHistory.addSubTask(subTask1);
-        taskManagerHistory.addSubTask(subTask2);
-
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());
@@ -121,20 +99,6 @@ public class HistoryTest {
 
     @Test
     public void Remove_From_History_Tail(){
-        InMemoryTaskManager taskManagerHistory = new InMemoryTaskManager();
-
-        task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
-        task2 = new Task("Обед", "Пообедать", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, 1, 1, 12, 0));
-        subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 9, 0));
-        subTask2 = new SubTask("Уборка ч.2", "Убрать вещи", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 10, 0));
-        epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
-
-        taskManagerHistory.addTask(task1);
-        taskManagerHistory.addTask(task2);
-        taskManagerHistory.addEpicTask(epicTask1);
-        taskManagerHistory.addSubTask(subTask1);
-        taskManagerHistory.addSubTask(subTask2);
-
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());
@@ -161,20 +125,6 @@ public class HistoryTest {
 
     @Test
     public void Remove_From_History_Body(){
-        InMemoryTaskManager taskManagerHistory = new InMemoryTaskManager();
-
-        task1 = new Task("Завтрак", "Позавтракать", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 8, 0));
-        task2 = new Task("Обед", "Пообедать", StatusTask.NEW, Duration.ofMinutes(120), LocalDateTime.of(2022, 1, 1, 12, 0));
-        subTask1 = new SubTask("Уборка ч.1", "Пылесосить", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 9, 0));
-        subTask2 = new SubTask("Уборка ч.2", "Убрать вещи", StatusTask.NEW, Duration.ofMinutes(60), LocalDateTime.of(2022, 1, 1, 10, 0));
-        epicTask1 = new EpicTask("Уборка", "Убрать квартиру", StatusTask.NEW);
-
-        taskManagerHistory.addTask(task1);
-        taskManagerHistory.addTask(task2);
-        taskManagerHistory.addEpicTask(epicTask1);
-        taskManagerHistory.addSubTask(subTask1);
-        taskManagerHistory.addSubTask(subTask2);
-
 
         taskManagerHistory.getTask(task1.getId());
         taskManagerHistory.getTask(task2.getId());
